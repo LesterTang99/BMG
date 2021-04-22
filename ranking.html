@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="js/chart.min.js"></script>
+	<script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	<meta charset="utf-8"> 
+	<title>圣经百万富翁</title>
+</head>
+<body>
+	<!--Navigation Bar-->
+	<nav class="navbar fixed-top navbar-expand-lg  navbar-dark bg-primary" style="background-color: #e3f2fd;">
+		<a class="navbar-brand" href="index.html">圣经百万富翁</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="ranking.html">小组排名</a>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
+	<br/><br/><br/>
+
+	<!--显示小组金额-->
+	<div class="chart-container">
+		<canvas id="myChart"></canvas>
+	</div>
+	
+	<!--Bootstrap JS-->
+    <script src="js/bootstrap.min.js"></script>
+	
+	<!--Firebase JS-->
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+	<script>
+		// Your web app's Firebase configuration
+		// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+		var firebaseConfig = {
+			apiKey: "AIzaSyAF_wVmDAKEOeh-scjpuNLfXZxHCp8obqs",
+			authDomain: "bible-millionaire.firebaseapp.com",
+			databaseURL: "https://bible-millionaire-default-rtdb.firebaseio.com",
+			projectId: "bible-millionaire",
+			storageBucket: "bible-millionaire.appspot.com",
+			messagingSenderId: "91077317697",
+			appId: "1:91077317697:web:34d1ee123512982b4062c0",
+			measurementId: "G-7J617EXJR3"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+		firebase.analytics();
+		
+		var zgz;
+		var ygz;
+		var mgz;
+		
+		<!--追光组的金额-->
+		firebase.database().ref('Group/追光组').once('value',
+			function(snapshot){
+				zgz = parseInt(snapshot.val().Money);
+			}
+		);
+		
+		
+		<!--跃光组的金额-->
+		firebase.database().ref('Group/跃光组').once('value',
+			function(snapshot){
+				ygz = parseInt(snapshot.val().Money);
+			}
+		);
+		
+		<!--每光组的金额-->
+		firebase.database().ref('Group/每光组').once('value',
+			function(snapshot){
+				mgz = parseInt(snapshot.val().Money);
+			}
+		);
+		
+		<!--Bar Chart Drawing-->
+		function populateGraph()
+		{
+			setTimeout(function(){
+				var ctx = document.getElementById('myChart').getContext('2d');
+				Chart.defaults.font.size = 30;
+				var myChart = new Chart(ctx, {
+					type: 'bar',
+					data: {
+						labels: ['追光组', '跃光组', '每光组'],
+						datasets: [{
+							label: '# 万',
+							data: [zgz, ygz, mgz],
+							backgroundColor: [
+								'rgba(236, 112, 99, 0.2)',
+								'rgba(88, 214, 141, 0.2)',
+								'rgba(93, 173, 226, 0.2)'
+							],
+							borderColor: [
+								'rgba(236, 112, 99, 1)',
+								'rgba(88, 214, 141, 1)',
+								'rgba(93, 173, 226, 1)'
+							],
+							borderWidth: 1
+						}]
+					},
+					options: {
+						responsive: true,
+						maintainAspectRatio: false,	
+						scales: {
+							y: {
+								beginAtZero: true,
+								suggestedMax: 100,
+								ticks: {
+									callback: function(value, index, values) {
+										return value + "万 ";
+									}
+								}
+							}
+						},
+						plugins: {
+							legend: {
+								display: false
+							}
+						}
+					}
+				});
+			}, 1000);
+		};
+		
+		populateGraph();				
+	</script>
+</body>
+</html>
