@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<script type="text/javascript" src="js/jquery-3.6.0.min.js"></script>
+	<link rel="stylesheet" href="css/bootstrap.min.css">
+	<link rel="stylesheet" href="css/style.css">
+	<meta charset="utf-8"> 
+	<title>圣经百万富翁</title>
+</head>
+<body>
+	<!--Navigation Bar-->
+	<nav class="navbar fixed-top navbar-expand-lg  navbar-dark bg-primary" style="background-color: #e3f2fd;">
+		<a class="navbar-brand" href="index.html">圣经百万富翁</a>
+		<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+			<span class="navbar-toggler-icon"></span>
+		</button>
+
+		<div class="collapse navbar-collapse" id="navbarSupportedContent">
+			<ul class="navbar-nav mr-auto">
+				<li class="nav-item">
+					<a class="nav-link" href="ranking.html">小组排名</a>
+				</li>
+			</ul>
+
+			<button type="button" class="btn btn-danger" id="reset">重置</button>
+		</div>
+	</nav>
+
+	<br/><br/><br/>
+
+	<!--题目号码-->
+	<div class="grid_container_one" id="number_grid"></div>
+	
+	<br/>
+	
+	<!--Bootstrap JS-->
+    <script src="js/bootstrap.min.js"></script>
+	
+	<!--Firebase JS-->
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-app.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-auth.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-database.js"></script>
+	<script src="https://www.gstatic.com/firebasejs/8.3.1/firebase-analytics.js"></script>
+	<script>
+		// Your web app's Firebase configuration
+		// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+		var firebaseConfig = {
+			apiKey: "AIzaSyAF_wVmDAKEOeh-scjpuNLfXZxHCp8obqs",
+			authDomain: "bible-millionaire.firebaseapp.com",
+			databaseURL: "https://bible-millionaire-default-rtdb.firebaseio.com",
+			projectId: "bible-millionaire",
+			storageBucket: "bible-millionaire.appspot.com",
+			messagingSenderId: "91077317697",
+			appId: "1:91077317697:web:34d1ee123512982b4062c0",
+			measurementId: "G-7J617EXJR3"
+		};
+		// Initialize Firebase
+		firebase.initializeApp(firebaseConfig);
+		firebase.analytics();
+		
+		const colors = ['red', 'green', 'blue', 'gray'];
+		
+		function populateNumGrid()
+		{
+			var i = 1;
+			var value;
+			var tile;
+			firebase.database().ref('QuestionNO').once('value', 
+				function(AllQuestions){
+					AllQuestions.forEach(
+						function(CurrentQuestion){
+							value = CurrentQuestion.val().Value;
+							$('#number_grid').append('<div id="'+ i +'"  class="grid_item_one" value="' + value + '" onclick="redirectToQuestion(this.id)";>' + i + '</div>')
+							tile = document.getElementById(i);
+							if (value == 'red')
+							{
+								tile.style.pointerEvents = 'none';
+								tile.classList.add(colors[0]);
+							}
+							
+							else if (value == 'green')
+							{
+								tile.style.pointerEvents = 'none';
+								tile.classList.add(colors[1]);
+							}
+			
+							else if (value == 'blue')
+							{
+								tile.style.pointerEvents = 'none';
+								tile.classList.add(colors[2]);
+							}
+							
+							else if (value == 'ALLWRONG')
+							{
+								tile.style.pointerEvents = 'none';
+								tile.classList.add(colors[3]);
+							}
+							
+							i++;
+						}
+					);
+				}
+			);
+		}
+		
+		window.onload = populateNumGrid();
+		
+		<!--Redirect to question page-->
+		function redirectToQuestion(questionNo)
+		{
+			localStorage.setItem("questionNo",questionNo);
+			location.href = "question.html";
+		};
+		
+		<!--fetch json into db and create group in db-->
+		function fetchJsonIntoDB()
+		{
+			fetch("question.json")
+				.then(response => response.json())
+				.then(response => {
+					var i = 0;
+						console.log(response.questions.length);
+					for (i = 0; i < response.questions.length; i++)
+					{
+						var qNO = i;
+						qNO += 1;
+						if(response.questions[i].hasOwnProperty('Answer1'))
+						{
+							firebase.database().ref('QuestionNO/' + qNO).set({
+								ID : response.questions[i].id,
+								Question : response.questions[i].Question,
+								A1 : response.questions[i].Answer1,
+								A2 : response.questions[i].Answer2,
+								A3 : response.questions[i].Answer3,
+								A : response.questions[i].A,
+								B : response.questions[i].B,
+								C : response.questions[i].C,
+								D : response.questions[i].D,
+								Answer : response.questions[i].Answer,
+								Value : "NO",
+								Money : response.questions[i].Money,
+								Out : response.questions[i].Out
+							});
+						}
+						
+						else if (!response.questions[i].hasOwnProperty('A'))
+						{
+							if (!response.questions[i].hasOwnProperty('Out'))
+							{
+							console.log(response.questions[i].Answer);
+							firebase.database().ref('QuestionNO/' + qNO).set({
+								ID : response.questions[i].id,
+								Question : response.questions[i].Question,
+								Answer : response.questions[i].Answer,
+								Value : "NO",
+								Money : response.questions[i].Money
+							});
+							}
+							
+							else
+							{
+							firebase.database().ref('QuestionNO/' + qNO).set({
+								ID : response.questions[i].id,
+								Question : response.questions[i].Question,
+								Answer : response.questions[i].Answer,
+								Value : "NO",
+								Money : response.questions[i].Money,
+								Out : response.questions[i].Out
+							});
+							}
+						}
+						
+						else if (!response.questions[i].hasOwnProperty('C'))
+						{
+							firebase.database().ref('QuestionNO/' + qNO).set({
+								ID : response.questions[i].id,
+								Question : response.questions[i].Question,
+								A : response.questions[i].A,
+								B : response.questions[i].B,
+								Answer : response.questions[i].Answer,
+								Value : "NO",
+								Money : response.questions[i].Money,
+								Out : response.questions[i].Out
+							});
+						}
+						
+						else
+						{
+							firebase.database().ref('QuestionNO/' + qNO).set({
+								ID : response.questions[i].id,
+								Question : response.questions[i].Question,
+								A : response.questions[i].A,
+								B : response.questions[i].B,
+								C : response.questions[i].C,
+								D : response.questions[i].D,
+								Answer : response.questions[i].Answer,
+								Value : "NO",
+								Money : response.questions[i].Money,
+								Out : response.questions[i].Out
+							});
+						}
+					}
+				}).then(response => {
+					var groupName = ["追光组", "跃光组", "每光组"];
+						for (var i = 0; i < groupName.length; i++)
+						{
+							firebase.database().ref('Group/' + groupName[i]).set({
+								Money : 0
+							});
+						}
+					});
+					
+			setTimeout(function(){
+				location.reload();
+			}, 1000);
+		};
+		
+		<!--重置一切-->
+		document.getElementById('reset').onclick = function(){
+			firebase.database().ref('QuestionNO').once("value",
+				function(snapshot){
+					if (snapshot.exists())
+					{
+						firebase.database().ref('QuestionNO').remove();
+					}
+					
+					fetchJsonIntoDB();
+				}
+			);
+		};
+	</script>
+</body>
+</html>
