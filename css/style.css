@@ -1,0 +1,84 @@
+.grid_container_one {
+	display: grid;
+	grid-template-columns: auto auto auto auto auto auto auto auto auto auto;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+.grid_container_two {
+	display: grid;
+	grid-template-columns: auto auto;
+}
+.grid_container_three {
+	display: grid;
+	grid-template-columns: auto auto auto;
+	margin-left: 20%;
+	margin-right: 20%;
+}
+.grid_container_four {
+	display: grid;
+	grid-template-columns: auto;
+	margin-left: 0 auto;
+}
+
+.grid_item_one {
+	background-color: rgba(255, 255, 255, 0.8);
+	border: 1px solid rgba(0, 0, 0, 0.8);
+	font-size: 50px;
+	text-align: center;
+	margin: 5px;
+	padding: 20px 0;
+}
+
+.grid_item_two {
+	font-size: 50px;
+	text-align: center;
+	margin-left: 10%;
+	margin-right: 10%;
+	margin-top: 5%;
+}
+
+.grid_item_three {
+	font-size: 50px;
+	text-align: center;
+	margin-left: 10%;
+	margin-right: 10%;
+}
+
+.grid_item_four {
+	background-color: rgba(255, 255, 255, 1);
+	text-align: center;
+	margin-left: 20px;
+	margin-right: 20px;
+	margin-bottom: 30px;
+}
+
+.card{
+	margin-right: 10%;
+	margin-left: 10%;
+}
+
+.chart-container {
+	width: 1000px;
+	height: 650px;
+	margin: 0 auto;
+}
+
+#one, .red{
+	background-color: #EC7063;
+}
+
+#two, .green{
+	background-color: #58D68D;
+}
+
+#three, .blue{
+	background-color: #5DADE2;
+}
+
+#ALLWRONG, .gray{
+	background-color: #A9A9A9;
+}
+
+#bibleout, #countdown, #timer{
+	font-size: 50px;
+}
